@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes: [redis-data:/data]
+
+  producer:
+    build: ./producer
+    ports: ["8080:8080"]
+    environment:
+      - REDIS_HOST=redis
+    depends_on: [redis]
+
+  worker-1:
+    build: ./worker
+    environment:
+      - WORKER_ID=worker-1
+      - REDIS_HOST=redis
+    depends_on: [redis]
+
+  worker-2:
+    build: ./worker
+    environment:
+      - WORKER_ID=worker-2
+      - REDIS_HOST=redis
+    depends_on: [redis]
+
+  worker-3:
+    build: ./worker
+    environment:
+      - WORKER_ID=worker-3
+      - REDIS_HOST=redis
+    depends_on: [redis]
+
+volumes:
+  redis-data:
