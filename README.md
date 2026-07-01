@@ -17,7 +17,7 @@
 
 # 📐 Architecture
 
-<img width="575" height="389" alt="image" src="https://github.com/user-attachments/assets/14e44132-0a80-4ed6-bea4-5f00a29f05de" />
+<img width="572" height="388" alt="image" src="https://github.com/user-attachments/assets/20789423-bdc3-4dc4-ac86-5e1e105e51b0" />
 
 
 # 🚀 Task Lifecycle
