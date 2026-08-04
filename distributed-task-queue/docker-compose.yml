@@ -34,5 +34,12 @@ services:
       - REDIS_HOST=redis
     depends_on: [redis]
 
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "3000:3000"
+    depends_on: [producer]
+
+
 volumes:
   redis-data:
