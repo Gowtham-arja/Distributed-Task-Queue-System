@@ -16,8 +16,13 @@ public class TaskPullerThread implements Runnable {
     @Override
     public void run() {
         while (w.isRunning()) {
+            if (w.busy.get()) {
+                try { Thread.sleep(100); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); return; }
+                continue;
+            }
+
             try (Jedis j = w.pool.getResource()) {
-                List<String> res = j.brpop(0, "task:queue");
+                List<String> res = j.brpop(1, "task:queue");
                 if (res == null || res.size() < 2) continue;
                 String json = res.get(1);
                 Task t = mapper.readValue(json, Task.class);

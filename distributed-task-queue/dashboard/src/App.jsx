@@ -2,7 +2,7 @@ import React from 'react'
 import { useWebSocket } from './hooks/useWebSocket'
 import StatsCards from './components/StatsCards'
 import TaskChart from './components/TaskChart'
-import WorkerList from './components/WorkerList'
+import PipelineView from './components/PipelineView'
 import TaskSubmitForm from './components/TaskSubmitForm'
 import DLQViewer from './components/DLQViewer'
 import { Activity } from 'lucide-react'
@@ -48,6 +48,11 @@ export default function App() {
         <StatsCards stats={stats} />
       </div>
 
+      {/* Live pipeline: queue -> workers */}
+      <div className="mb-4">
+        <PipelineView stats={stats} />
+      </div>
+
       {/* Chart + Submit form */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
         <div className="md:col-span-3">
@@ -58,9 +63,8 @@ export default function App() {
         </div>
       </div>
 
-      {/* Workers + DLQ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <WorkerList stats={stats} />
+      {/* DLQ */}
+      <div className="grid grid-cols-1 gap-4">
         <DLQViewer />
       </div>
 

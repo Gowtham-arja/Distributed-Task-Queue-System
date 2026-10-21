@@ -2,10 +2,12 @@ package com.taskqueue.worker;
 
 import com.taskqueue.worker.model.Task;
 import com.taskqueue.worker.threads.*;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -13,6 +15,7 @@ public class Worker {
     public final String workerId;
     public final JedisPool pool;
     public final LinkedBlockingQueue<Task> executionQueue = new LinkedBlockingQueue<>();
+    public final AtomicBoolean busy = new AtomicBoolean(false);
     private final Thread puller, executor, heartbeat;
     private volatile boolean running = true;
 
@@ -29,10 +32,24 @@ public class Worker {
 
     public void start() {
         log("Worker starting");
+        updateState("IDLE", null);
         puller.start(); executor.start(); heartbeat.start();
     }
 
     public boolean isRunning() { return running; }
+
+    public void updateState(String state, String currentTaskId) {
+        try (Jedis j = pool.getResource()) {
+            j.set("worker:" + workerId + ":state", state);
+            if (currentTaskId != null) {
+                j.set("worker:" + workerId + ":currentTask", currentTaskId);
+            } else {
+                j.del("worker:" + workerId + ":currentTask");
+            }
+        } catch (Exception e) {
+            log("State update error: " + e.getMessage());
+        }
+    }
 
     public void shutdown() {
         log("Shutdown requested");

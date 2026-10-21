@@ -20,6 +20,9 @@ public class TaskExecutorThread implements Runnable {
             try { t = w.executionQueue.take(); }
             catch (InterruptedException ie) { Thread.currentThread().interrupt(); return; }
 
+            w.busy.set(true);
+            w.updateState("BUSY", t.id);
+
             long start = System.currentTimeMillis();
             try {
                 engine.execute(t);
@@ -53,6 +56,9 @@ public class TaskExecutorThread implements Runnable {
                     w.log("Redis error handling failure: " + re.getMessage());
                 }
             }
+
+            w.updateState("IDLE", null);
+            w.busy.set(false);
         }
     }
 }
